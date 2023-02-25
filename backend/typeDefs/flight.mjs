@@ -18,7 +18,7 @@ const flightTypeDefs = `#graphql
         id: ID!
         flightNumber: String!
         flightDate: String!
-        users: [User]
+        users: [User!]
     }
 `;
 

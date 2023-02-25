@@ -12,7 +12,10 @@ export const userResolver = {
 	Mutation: {
 		createUser: async (_, { user }) => {
 			const { email, password, flight } = user;
-			const newFlight = await Flight.findById(flight);
+			const newFlight = await Flight.fineOne({
+				flightNumber: flight.flightNumber,
+				flightDate: flight.flightDate,
+			});
 
 			const newUser = new User({ email, password, flight: newFlight._id });
 			const result = await newUser.save();
