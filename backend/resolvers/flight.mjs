@@ -4,16 +4,26 @@ import User from '../database/models/user.js';
 export const flightResolver = {
 	Query: {
 		flights: async () => {
-			const flights = await Flight.find({}).populate('users');
-			return flights;
+			try {
+				const flights = await Flight.find({}).populate('users');
+				return flights;
+			} catch (err) {
+				console.error(err);
+				throw new Error('An error occurred while fetching flights');
+			}
 		},
 	},
 
 	Mutation: {
 		createFlight: async (_, { flight }) => {
-			const newFlight = new Flight(flight);
-			const result = await newFlight.save();
-			return result;
+			try {
+				const newFlight = new Flight(flight);
+				const result = await newFlight.save();
+				return result;
+			} catch (err) {
+				console.error(err);
+				throw new Error('An error occurred while creating a new flight');
+			}
 		},
 	},
 
