@@ -29,8 +29,13 @@ export const flightResolver = {
 
 	Flight: {
 		users: async (parent) => {
-			const users = await User.find({ flight: parent.id });
-			return users;
+			try {
+				const users = await User.find({ flight: parent.id });
+				return users;
+			} catch (err) {
+				console.error(err);
+				throw new Error('An error occurred while fetching users');
+			}
 		},
 	},
 };

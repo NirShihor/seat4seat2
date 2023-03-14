@@ -9,10 +9,12 @@ const userSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
-	flight: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: 'Flight',
-	},
+	flights: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'Flight',
+		},
+	],
 });
 
 module.exports = mongoose.model('User', userSchema);

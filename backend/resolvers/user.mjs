@@ -1,11 +1,36 @@
+import bcrypt from 'bcrypt';
+
 import User from '../database/models/user.js';
 import Flight from '../database/models/flight.js';
 
 export const userResolver = {
 	Query: {
 		users: async () => {
-			const users = await User.find({}).populate('flight');
-			return users;
+			try {
+				const users = await User.find({}).populate('flights');
+				return users;
+			} catch (err) {
+				console.error(err);
+				throw new Error('An error occurred while fetching users');
+			}
+		},
+		userById: async (_, { id }) => {
+			try {
+				const user = await User.findById(id).populate('flights');
+				return user;
+			} catch (err) {
+				console.error(err);
+				throw new Error('An error occurred while fetching user');
+			}
+		},
+		userByEmail: async (_, { email }) => {
+			try {
+				const user = await User.findOne({ email: email }).populate('flights');
+				return user;
+			} catch (err) {
+				console.error(err);
+				throw new Error('An error occurred while fetching user');
+			}
 		},
 	},
 
@@ -23,25 +48,33 @@ export const userResolver = {
 					flightDate: flight.flightDate,
 				});
 
+				let flightId;
+
 				if (!newFlight) {
 					const createdFlight = await Flight.create({
 						flightNumber: flight.flightNumber,
 						flightDate: flight.flightDate,
 					});
-					const newUser = new User({
-						email,
-						password,
-						flight: createdFlight._id,
-					});
-					const result = await newUser.save();
-
-					return result.populate('flight');
+					flightId = createdFlight._id;
+				} else {
+					flightId = newFlight._id;
 				}
 
-				const newUser = new User({ email, password, flight: newFlight._id });
+				const hashedPassword = await bcrypt.hash(user.password, 12);
+				const newUser = new User({
+					email,
+					password: hashedPassword,
+					flights: [flightId],
+				});
+
 				const result = await newUser.save();
 
-				return result.populate('flight');
+				await Flight.findByIdAndUpdate(
+					flightId,
+					{ $push: { users: result._id } },
+					{ new: true, useFindAndModify: false }
+				);
+				return result.populate('flights');
 			} catch (err) {
 				console.error(err);
 				if (err.message === 'User already exists') {

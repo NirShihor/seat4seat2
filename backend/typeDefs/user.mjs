@@ -2,6 +2,8 @@ const userTypeDefs = `#graphql
 
 extend type Query {
         users: [User]
+        userById(id: ID!): User
+        userByEmail(email: String!): User
     }
     extend type Mutation {
         createUser(user: UserInput!): User!
@@ -23,6 +25,7 @@ extend type Query {
         email: String!
         password: String!
         flight: Flight
+        flights: [Flight]
     }
 `;
 
