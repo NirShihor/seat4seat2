@@ -1,32 +1,60 @@
 const userTypeDefs = `#graphql
 
 extend type Query {
-        users: [User]
-        userById(id: ID!): User
-        userByEmail(email: String!): User
-    }
-    extend type Mutation {
-        createUser(user: UserInput!): User!
-    }
+    users: [User]
+    userById(id: ID!): User
+    userByEmail(email: String!): User
+  }
 
-    input FlightInput {
-        flightNumber: String!
-        flightDate: String!
-    }
+  extend type Mutation {
+    createUser(user: UserInput!): User!
+  }
 
-    input UserInput {
-        email: String!
-        password: String!
-        flight: FlightInput
-    }
-    
-    type User {
-        id: ID!
-        email: String!
-        password: String!
-        flight: Flight
-        flights: [Flight]
-    }
+  input SwapSeatsInput {
+    seatUsing: String!
+    seatToSwap: String!
+    seatsWanted: [String]!
+  }
+
+  input FlightInput {
+    flightNumber: String!
+    flightDate: String!
+    seatSwaps: SwapSeatsInput
+  }
+
+  input UserInput {
+    email: String!
+    password: String!
+    flight: FlightInput!
+  }
+
+  type FlightInfo {
+  id: ID!
+  flightNumber: String!
+  flightDate: String!
+  seatSwaps: SeatSwaps
+}
+
+  type Flight {
+  id: ID!
+  flightId: FlightInfo!
+  users: [User!]
+  seatSwaps: SeatSwaps
+}
+
+  type User {
+    id: ID!
+    email: String!
+    password: String!
+    flight: Flight
+  }
+
+  type SeatSwaps {
+    seatUsing: String!
+    seatToSwap: String!
+    seatsWanted: [String]!
+  }
+
 `;
 
 export default userTypeDefs;

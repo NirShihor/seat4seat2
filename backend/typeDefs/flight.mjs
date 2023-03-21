@@ -1,7 +1,7 @@
 const flightTypeDefs = `#graphql
 
     extend type Query {
-        flights: [Flight]
+        flight: [Flight]
     }
 
     extend type Mutation {

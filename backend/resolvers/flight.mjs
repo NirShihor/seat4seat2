@@ -3,10 +3,10 @@ import User from '../database/models/user.js';
 
 export const flightResolver = {
 	Query: {
-		flights: async () => {
+		flight: async () => {
 			try {
-				const flights = await Flight.find({}).populate('users');
-				return flights;
+				const flight = await Flight.find({}).populate('users');
+				return flight;
 			} catch (err) {
 				console.error(err);
 				throw new Error('An error occurred while fetching flights');
@@ -17,7 +17,10 @@ export const flightResolver = {
 	Mutation: {
 		createFlight: async (_, { flight }) => {
 			try {
-				const newFlight = new Flight(flight);
+				const newFlight = new Flight({
+					flightNumber: flight.flightNumber,
+					flightDate: flight.flightDate,
+				});
 				const result = await newFlight.save();
 				return result;
 			} catch (err) {

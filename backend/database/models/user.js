@@ -9,12 +9,28 @@ const userSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
-	flights: [
-		{
+	flight: {
+		flightId: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Flight',
 		},
-	],
+		seatSwaps: {
+			seatUsing: {
+				type: String,
+				required: true,
+			},
+			seatToSwap: {
+				type: String,
+				required: true,
+			},
+			seatsWanted: [
+				{
+					type: String,
+					required: true,
+				},
+			],
+		},
+	},
 });
 
 module.exports = mongoose.model('User', userSchema);
