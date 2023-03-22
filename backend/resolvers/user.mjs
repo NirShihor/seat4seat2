@@ -69,7 +69,7 @@ export const userResolver = {
 				const newUser = new User({
 					email,
 					password: hashedPassword,
-					flight: [
+					flights: [
 						{
 							flightId,
 							seatSwaps: seatSwaps,
@@ -80,7 +80,7 @@ export const userResolver = {
 				const result = await newUser.save();
 
 				const userFlight = await Flight.findOne({
-					_id: result.flight[0].flightId,
+					_id: result.flights[0].flightId,
 				});
 
 				await Flight.findByIdAndUpdate(
@@ -90,7 +90,7 @@ export const userResolver = {
 				);
 
 				const userCreated = await User.findById(result._id).populate(
-					'flight.flightId'
+					'flights.flightId'
 				);
 
 				console.log('USERCREATED: ', userCreated);

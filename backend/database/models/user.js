@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
-	flight: [
+	flights: [
 		{
 			flightId: {
 				type: mongoose.Schema.Types.ObjectId,

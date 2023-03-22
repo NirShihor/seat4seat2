@@ -46,7 +46,7 @@ extend type Query {
     id: ID!
     email: String!
     password: String!
-    flight: [Flight]
+    flights: [Flight]
   }
 
   type SeatSwaps {
