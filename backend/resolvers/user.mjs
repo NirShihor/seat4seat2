@@ -69,16 +69,18 @@ export const userResolver = {
 				const newUser = new User({
 					email,
 					password: hashedPassword,
-					flight: {
-						flightId,
-						seatSwaps: seatSwaps,
-					},
+					flight: [
+						{
+							flightId,
+							seatSwaps: seatSwaps,
+						},
+					],
 				});
 
 				const result = await newUser.save();
 
 				const userFlight = await Flight.findOne({
-					_id: result.flight.flightId,
+					_id: result.flight[0].flightId,
 				});
 
 				await Flight.findByIdAndUpdate(
@@ -96,7 +98,7 @@ export const userResolver = {
 				return userCreated;
 			} catch (err) {
 				console.error(err);
-				if (err.message === 'User already exists. Please login') {
+				if (err.message === 'User already exists') {
 					throw err;
 				}
 				throw new Error('An error occurred while creating a new user');
