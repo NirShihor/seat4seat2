@@ -37,7 +37,7 @@ extend type Query {
 
   type Flight {
   id: ID!
-  flightId: FlightInfo!
+  flight: FlightInfo!
   users: [User!]
   seatSwaps: SeatSwaps
 }
