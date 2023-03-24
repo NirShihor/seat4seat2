@@ -15,6 +15,11 @@ const flightSchema = new mongoose.Schema({
 			ref: 'User',
 		},
 	],
+	seatsBucket: [
+		{
+			type: String,
+		},
+	],
 });
 
 module.exports = mongoose.model('Flight', flightSchema);

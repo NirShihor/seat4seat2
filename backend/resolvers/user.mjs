@@ -83,17 +83,20 @@ export const userResolver = {
 					_id: result.flights[0].flight,
 				});
 
+				console.log('SEAT TO SWAP : ', flight.seatSwaps.seatToSwap);
+
 				await Flight.findByIdAndUpdate(
 					userFlight._id,
-					{ $push: { users: result._id } },
+					{
+						$push: { users: result._id },
+						$push: { seatsBucket: flight.seatSwaps.seatToSwap },
+					},
 					{ new: true, useFindAndModify: false }
 				);
 
 				const userCreated = await User.findById(result._id).populate(
 					'flights.flight'
 				);
-
-				console.log('USERCREATED: ', userCreated);
 
 				return userCreated;
 			} catch (err) {

@@ -20,6 +20,7 @@ export const flightResolver = {
 				const newFlight = new Flight({
 					flightNumber: flight.flightNumber,
 					flightDate: flight.flightDate,
+					seatsBucket: flight.seatsBucket,
 				});
 				const result = await newFlight.save();
 				return result;
