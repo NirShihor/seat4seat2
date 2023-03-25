@@ -77,28 +77,43 @@ export const userResolver = {
 					],
 				});
 
-				const result = await newUser.save();
+				console.log('SEATTOSWAP', flight.seatSwaps.seatToSwap);
 
-				const userFlight = await Flight.findOne({
-					_id: result.flights[0].flight,
+				const matchingFlight = await Flight.findOne({
+					flightNumber: flightNumber,
+					flightDate: flightDate,
 				});
+				console.log('MATHCING FLIGHT SEATBUCKET: ', matchingFlight.seatsBucket);
 
-				console.log('SEAT TO SWAP : ', flight.seatSwaps.seatToSwap);
+				if (!matchingFlight.seatsBucket.includes(flight.seatSwaps.seatToSwap)) {
+					const result = await newUser.save();
 
-				await Flight.findByIdAndUpdate(
-					userFlight._id,
-					{
-						$push: { users: result._id },
-						$push: { seatsBucket: flight.seatSwaps.seatToSwap },
-					},
-					{ new: true, useFindAndModify: false }
-				);
+					const latestFlight = result.flights.reduce((acc, flight) => {
+						if (!acc || flight.createdAt > acc.createdAt) {
+							return flight;
+						}
+						return acc;
+					}, null);
 
-				const userCreated = await User.findById(result._id).populate(
-					'flights.flight'
-				);
+					const userFlight = await Flight.findById(latestFlight.flight);
 
-				return userCreated;
+					await Flight.findByIdAndUpdate(
+						userFlight._id,
+						{
+							$push: { users: result._id },
+							$push: { seatsBucket: flight.seatSwaps.seatToSwap },
+						},
+						{ new: true, useFindAndModify: false }
+					);
+
+					const userCreated = await User.findById(result._id).populate(
+						'flights.flight'
+					);
+
+					return userCreated;
+				} else {
+					throw new Error('Seat already taken');
+				}
 			} catch (err) {
 				console.error(err);
 				if (err.message === 'User already exists') {
