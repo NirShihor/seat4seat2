@@ -55,6 +55,7 @@ export const userResolver = {
 				});
 
 				let flightId;
+				// if flight doesn't exist, create it
 				if (!newFlight) {
 					const createdFlight = await Flight.create({
 						flightNumber: flightNumber,
@@ -77,13 +78,10 @@ export const userResolver = {
 					],
 				});
 
-				console.log('SEATTOSWAP', flight.seatSwaps.seatToSwap);
-
 				const matchingFlight = await Flight.findOne({
 					flightNumber: flightNumber,
 					flightDate: flightDate,
 				});
-				console.log('MATHCING FLIGHT SEATBUCKET: ', matchingFlight.seatsBucket);
 
 				if (!matchingFlight.seatsBucket.includes(flight.seatSwaps.seatToSwap)) {
 					const result = await newUser.save();
@@ -97,6 +95,7 @@ export const userResolver = {
 
 					const userFlight = await Flight.findById(latestFlight.flight);
 
+					// add user and seatToSwap to flight
 					await Flight.findByIdAndUpdate(
 						userFlight._id,
 						{
@@ -110,13 +109,30 @@ export const userResolver = {
 						'flights.flight'
 					);
 
+					// check if any of the seatsWanted are available
+					flight.seatSwaps.seatsWanted.forEach((seat) => {
+						if (userFlight.seatsBucket.includes(seat)) {
+							console.log(`SEAT ${seat} FOUND TO BE AVAILABLE TO SWAP!`);
+							// execute swap
+						} else {
+							console.log(
+								`SEAT ${seat} NOT FOUND TO BE AVAILABLE YET TO SWAP. WE WILL NOTIFY YOU WHEN IT BECOMES AVAILABLE.`
+							);
+						}
+					});
+
 					return userCreated;
 				} else {
-					throw new Error('Seat already taken');
+					throw new Error('The seat you are looking to get is already taken');
 				}
 			} catch (err) {
 				console.error(err);
 				if (err.message === 'User already exists') {
+					throw err;
+				}
+				if (
+					err.message === 'The seat you are looking to get is already taken'
+				) {
 					throw err;
 				}
 				throw new Error('An error occurred while creating a new user');
